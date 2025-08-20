@@ -86,7 +86,7 @@ class Warehouse:
 
     def sort_by_shop(self):
         # TODO: отсортировать по магазину
-        self.__products.sort(key=lambda x: x.shop)
+        self.__products.sort(key=lambda x: x.store)
 
     def sort_by_price(self):
         # TODO: отсортировать по цене
@@ -141,9 +141,9 @@ class BeeElephant:
     def trumpet(self):
         # TODO: реализовать логику Trumpet
         if self.elephant >= self.bee:
-            return "Тудух тудух"
+            return "tu-tu-doo-doo"
         else:
-            return "бжжжж"
+            return "wzzzz"
 
     def eat(self, meal, value):
         # TODO: реализовать логику Eat
@@ -194,9 +194,14 @@ class Bus:
         self.max_seats = max_seats
         self.max_speed = max_speed
         self.passenger_list = []
+        self.has_free_seats = True
         self.seats = {i: None for i in range(1, max_seats + 1)}
 
     def board(self, *passengers):
+        for name in passengers:
+            if not self.has_free_seats:
+                print(f"Нет свободных мест! {name} не сел")
+                continue
         for item in passengers:
             if isinstance(item, (list, tuple)):
                 self.board(*item)  # Рекурсивная распаковка
@@ -205,6 +210,7 @@ class Bus:
                     if passenger is None:
                         self.seats[seat_num] = item
                         self.passenger_list.append(item)
+                        self.update_seats()
                         break
 
     def unboard(self, *passengers):
@@ -216,17 +222,18 @@ class Bus:
                     if passenger == item:
                         self.seats[seat_num] = None
                         self.passenger_list.remove(item)
+                        self.update_seats()
                         break
 
 
     def change_speed(self, delta):
         # TODO: изменить скорость на delta
         new_speed = self.speed + delta
-        if abs(new_speed) <= self.max_speed:
-            self.speed = new_speed
-        else:
-            self.speed = self.max_speed if delta > 0 else -self.max_speed
+        self.speed = max(0, min(self.max_speed, new_speed))
         return self.speed
+
+    def update_seats(self):
+        self.has_free_seats = len(self.passenger_list) < self.max_seats
 
     def __contains__(self, surname):
         # TODO: проверить фамилию пассажира
